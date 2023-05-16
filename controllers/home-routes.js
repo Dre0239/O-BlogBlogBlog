@@ -1,66 +1,97 @@
-const router = require("express").Router();
-const sequelize = require("../config/connection");
-const { Post, User, Comment } = require("../models");
+const router = require('express').Router();
+const { User, Blog, Comment } = require('../models');
+const withAuth = require('../utils/auth');
 
-router.get("/", (req, res) => {
-  console.log(req.session);
+router.get('/', async (req, res) => {
+	try {
+		const blogData = await Blog.findAll({
+			include: [{
+				model: User,
+				attributes: ['username'],
+			},],
+		});
 
-  Post.findAll({
-    attributes: [
-      "id",
-      "post_url",
-      "title",
-      "created_at",
-      [
-        sequelize.literal(
-          "(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)"
-        ),
-        "vote_count",
-      ],
-    ],
-    include: [
-      {
-        model: Comment,
-        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
-        include: {
-          model: User,
-          attributes: ["username"],
-        },
-      },
-      {
-        model: User,
-        attributes: ["username"],
-      },
-    ],
-  })
-    .then((dbPostData) => {
-      // pass a single post object into the homepage template
-      const posts = dbPostData.map((post) => post.get({ plain: true }));
+		const blogs = blogData.map((blog) => blog.get({
+			plain: true
+		}));
 
-      res.render("homepage", { posts });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+		res.render('homepage', {
+			blogs,
+			logged_in: req.session.logged_in
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
 });
 
-router.get("/login", (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect("/");
-    return;
-  }
-  res.render("login");
+router.get('/blog/:id', async (req, res) => {
+	try {
+		const blogData = await Blog.findByPk(req.params.id, {
+			include: [
+				{
+					model: User,
+					attributes: ['username'],
+				}, {
+					model: Comment,
+					include: [
+						User
+					]
+				}
+			],
+		});
+
+		const blog = blogData.get({
+			plain: true
+		});
+
+		res.render('blog', {
+			...blog,
+			logged_in: req.session.logged_in
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
 });
 
-router.post("/logout", (req, res) => {
-  if (req.session.loggedIn) {
-    req.session.destroy(() => {
-      res.status(204).end();
-    });
-  } else {
-    res.status(404).end();
-  }
+router.get('/dashboard', withAuth, async (req, res) => {
+	try {
+		const userData = await User.findByPk(req.session.user_id, {
+			attributes: {
+				exclude: ['password']
+			},
+			include: [{
+				model: Blog
+			}],
+		});
+
+		const user = userData.get({
+			plain: true
+		});
+
+		res.render('dashboard', {
+			...user,
+			logged_in: true
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
+
+router.get('/login', (req, res) => {
+	if (req.session.logged_in) {
+		res.redirect('/dashboard');
+		return;
+	}
+
+	res.render('login');
+});
+
+router.get('/signUp', (req, res) => {
+	if (req.session.logged_in) {
+		res.redirect('/dashboard');
+		return;
+	}
+	res.render('signUp');
 });
 
 module.exports = router;
