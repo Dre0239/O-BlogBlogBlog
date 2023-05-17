@@ -44,7 +44,7 @@ A database will need to be created first then seeded wih data.
 
 ## Usage
 
-To start the process, go to the deployed site [here](https://.herokuapp.com/)
+To start the process, go to the deployed site [here](https://thawing-tundra-85345.herokuapp.com/)
 
 Then create an account or view the first few blogs and comments.  
 
