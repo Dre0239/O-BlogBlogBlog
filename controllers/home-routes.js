@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -57,7 +57,7 @@ router.get('/post/:id', async (req, res) => {
     });
 
     if (!dbPostData) {
-      res.status(404).json({
+      res.status(404).render('404', {
         message: 'No post found with this id',
       });
       return;
@@ -71,7 +71,7 @@ router.get('/post/:id', async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -94,7 +94,9 @@ router.get('/signup', (req, res) => {
 });
 
 router.get('*', (req, res) => {
-  res.status(404).send("Can't go there!");
+  res.status(404).render('404', {
+    message: "Page not found"
+  });
 });
 
 module.exports = router;

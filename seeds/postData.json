@@ -1,17 +1,17 @@
 [
-    {
-      "title": "",
-      "content": "",
-      "user_id": 1
-    },
-    {
-      "title": "",
-      "content": "",
-      "user_id": 1
-    },
-    {
-      "title": "",
-      "content": "",
-      "user_id": 3
-    }
-  ]
+  {
+    "title": "First Post",
+    "content": "This is my first post content.",
+    "user_id": 1
+  },
+  {
+    "title": "Second Post",
+    "content": "This is my second post content.",
+    "user_id": 1
+  },
+  {
+    "title": "Third Post",
+    "content": "This is my third post content.",
+    "user_id": 3
+  }
+]

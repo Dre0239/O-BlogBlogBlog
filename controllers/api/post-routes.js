@@ -76,7 +76,7 @@ router.post("/", withAuth, (req, res) => {
     console.log("creating");
     Post.create({
             title: req.body.title,
-            content: req.body.post_content,
+            content: req.body.content, // Update the property name
             user_id: req.session.user_id
         })
         .then((dbPostData) => res.json(dbPostData))
@@ -86,52 +86,48 @@ router.post("/", withAuth, (req, res) => {
         });
 });
 
+
 // Update a post
-router.put("/:id", withAuth, (req, res) => {
-    Post.update({
-            title: req.body.title,
-            content: req.body.post_content,
-        }, {
-            where: {
-                id: req.params.id,
-            },
-        })
-        .then((dbPostData) => {
-            if (!dbPostData) {
-                res.status(404).json({
-                    message: "No post found with this id"
-                });
-                return;
-            }
-            res.json(dbPostData);
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-        });
-});
+router.put('/:id', withAuth, async (req, res) => {
+    try {
+      const [affectedRows] = await Post.update(req.body, {
+        where: {
+          id: req.params.id,
+          user_id: req.session.user_id,
+        },
+      });
+  
+      if (affectedRows > 0) {
+        res.status(200).end();
+      } else {
+        res.status(404).end();
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+
 
 //Delete a post
-router.delete("/:id", withAuth, (req, res) => {
-    Post.destroy({
-            where: {
-                id: req.params.id,
-            },
-        })
-        .then((dbPostData) => {
-            if (!dbPostData) {
-                res.status(404).json({
-                    message: "No post found with this id"
-                });
-                return;
-            }
-            res.json(dbPostData);
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-        });
-});
+router.delete('/:id', withAuth, async (req, res) => {
+    try {
+      const affectedRows = await Post.destroy({
+        where: {
+          id: req.params.id,
+          user_id: req.session.user_id,
+        },
+      });
+  
+      if (affectedRows > 0) {
+        res.status(200).end();
+      } else {
+        res.status(404).end();
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+
 
 
 module.exports = router;

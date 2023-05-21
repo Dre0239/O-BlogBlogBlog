@@ -33,7 +33,7 @@ router.get('/', withAuth, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -62,7 +62,9 @@ router.get('/edit/:id', withAuth, async (req, res) => {
     });
 
     if (!dbPostData) {
-      res.status(404).json({ message: 'No post found with this id' });
+      res.status(404).render('404', {
+        message: 'No post found with this id',
+      });
       return;
     }
 
@@ -74,7 +76,7 @@ router.get('/edit/:id', withAuth, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -85,3 +87,4 @@ router.get('/new', withAuth, (req, res) => {
 });
 
 module.exports = router;
+

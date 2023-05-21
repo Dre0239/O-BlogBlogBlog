@@ -1,17 +1,17 @@
 [
   {
-    "title": "",
-    "content": "",
+    "title": "First Comment",
+    "content": "This is my first comment content.",
     "user_id": 1
   },
   {
-    "title": "",
-    "content": "",
+    "title": "Second Comment",
+    "content": "This is my second comment content.",
     "user_id": 1
   },
   {
-    "title": "",
-    "content": "",
+    "title": "Third Comment",
+    "content": "This is my third comment content.",
     "user_id": 3
   }
 ]
